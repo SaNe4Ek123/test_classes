@@ -156,7 +156,7 @@ class Tpl_html extends Tpl{
 						$tpl[0] = preg_replace($reg_coment_2, '', $tpl[0]);
 					
 					//--- Сохраняем всё в массиве
-					$this -> templates[$name]['comment'] = $comment_1[0].'{template}'.$comment_2[0];
+					//$this -> templates[$name]['comment'] = $comment_1[0].'{template}'.$comment_2[0];
 					$this -> templates[$name]['tpl'] = $tpl[0];
 					$this -> templates[$name]['description'] = trim($desc, '() ');
 				}

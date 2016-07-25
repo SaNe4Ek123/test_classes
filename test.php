@@ -7,4 +7,5 @@ $tpl = new Tpl_html('html/');
 $a = $tpl -> load_html('test_html');
 
 echo $tpl -> get_parse_html();
+print_r($tpl -> get_tpl_names());
 ?>
