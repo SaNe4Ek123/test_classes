@@ -75,18 +75,13 @@ class Tpl_html extends Tpl{
 //--------*** Вспомогательные методы класса (Закрытые) ***-------------
 
 # Создаёт шаблон из обработанных кусочков (создаёт web-страницу)
-	private function parse_html($comment = false, $tpl_names = ''){
+	private function parse_html($tpl_names = ''){
 		if(empty($tpl_names)){
 			$tpl_names = $this -> get_tpl_names();
 		}
 
 		//--- Ищем и заменяем якоря на подготовленные шаблоны
 		foreach($tpl_names as $name => $tpl){
-			//---
-			if($comment === true){
-				$tpl_names[$name]['tpl'] = str_replace('{template}', $tpl['tpl'], $tpl['comment']);
-			}
-			//---
 			foreach($tpl_names as $n => $parse_tpl){
 
 				if(strstr($parse_tpl['tpl'], '{_'.$name.'_}'))
@@ -96,7 +91,7 @@ class Tpl_html extends Tpl{
 
 		//--- Заменяем якоря до тех пор пока они не закончатся
 		if(preg_match("/\{_[A-Z_\d]+_\}/", end($tpl_names)['tpl'])){
-			$this -> html_parse = $this -> parse_html($comment, $tpl_names);
+			$this -> html_parse = $this -> parse_html($tpl_names);
 		}
 		return $this -> html_parse;
 	}
