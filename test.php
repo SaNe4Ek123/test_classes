@@ -21,5 +21,5 @@ foreach($menu as $item => $link){
 		'LINK' => $link);
 }
 $tpl -> multi_parse_tpl('HEADER_MENU', $data);
-echo $tpl -> get_parse_html(true);
+echo $tpl -> get_parse_html();
 ?>

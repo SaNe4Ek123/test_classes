@@ -1,6 +1,7 @@
 <?php
-//!!! Добавить возможность добавления нескольких наборов данных в шаблон... 
-//!!! Сделать преобразование в верхний входных ключей шаблонов
+//***** ВАЖНО *****
+//	Необходимо задокументировать класс, пока он не оброс до неузнаваемости.
+
 /*
 	****** Методы класса ******
 
@@ -64,7 +65,7 @@ class Tpl_html extends Tpl{
 		if($comment === false){
 			# Убираем все комментарии из страницы
 			$html = $this -> parse_html();
-			$reg = "/(\<\!-- *?\>\> *?[A-Z_\d]+ *?\( ?([\pL \d\-_]+)? *?\) *?--\>(\r\n)?)|(\<\!-- *?[A-Z_\d]+ ?\<\< *?--\>(\r\n)?)/u";
+			$reg = "/(\t*?\<\!-- *?\>\> *?[A-Z_\d]+ *?\( ?[\pL \d\-_]*? *?\) *?--\>(\r\n)?)|(\t*?\<\!-- *?[A-Z_\d]+ ?\<\< *?--\>(\r\n)?)/u";
 			$html = preg_replace($reg, '', $html);
 			return $html;
 		}else{
@@ -72,9 +73,8 @@ class Tpl_html extends Tpl{
 		}
 	}
 
-//--------------------------------------------------
-
-	# Множественная обработка шаблона
+//--------------------------------------------------------------
+# Множественная обработка шаблона
 	function multi_parse_tpl($name = '', $data = ''){
 		if (!empty($name) and is_string($name) and is_array($data) and count($data)>0) {
 			$tpl = $this -> get_tpl($name);
@@ -82,7 +82,8 @@ class Tpl_html extends Tpl{
 			foreach ($data as $input) {
 				$parse_tpl .= $this -> parse_tpl($name, $input)['tpl'];
 			}
-			return $this -> html_parse_tpl[$name] = $parse_tpl;
+			$this -> html_parse_tpl[$name]['tpl'] = $parse_tpl;
+			return true;
 		}
 		return false;
 	}
@@ -93,23 +94,25 @@ class Tpl_html extends Tpl{
 	private function parse_html($tpl_names = ''){
 		if(empty($tpl_names)){
 			$tpl_names = $this -> html_parse_tpl;
+			$html_parse = $this -> html_parse;
 		}
 
 		//--- Ищем и заменяем якоря на подготовленные шаблоны
 		foreach($tpl_names as $name => $tpl){
 			foreach($tpl_names as $n => $parse_tpl){
-
-				if(strstr($parse_tpl, '{_'.$name.'_}'))
-				$tpl_names[$n] = str_replace('{_'.$name.'_}', $tpl, $parse_tpl);
+				if(strstr($parse_tpl['tpl'], '{_'.$name.'_}')){
+					$tpl['tpl'] = str_replace('{template}', $tpl['tpl'], $tpl['comment']);
+					$tpl_names[$n]['tpl'] = str_replace('{_'.$name.'_}', $tpl['tpl'], $parse_tpl['tpl']);
+				}
 			}
 		}
+
 		//--- Заменяем якоря до тех пор пока они не закончатся
-		if(preg_match("/\{_[A-Z_\d]+_\}/", end($tpl_names))){
+		if(preg_match("/\{_[A-Z_\d]+_\}/", end($tpl_names)['tpl'])){
 			$this -> parse_html($tpl_names);
 		}
-
-		$this -> html_parse = end($tpl_names);
-		return $this -> html_parse;
+		$tpl = end($tpl_names);
+		return preg_replace("/\{ *?template *?\}/i", $tpl['tpl'], $tpl['comment']);
 	}
 
 //------------------------------------
@@ -153,16 +156,18 @@ class Tpl_html extends Tpl{
 				if(preg_match($reg_tpl, $html, $tpl)){
 					
 					//--- выделяем описание шаблона
-					$reg_tpl_description = "/".$name." ?\( ?([\w\s\d\>\<]+)? ?\)/u";
-					if(preg_match($reg_tpl_description, $tpl[0], $desc))
+					$reg_tpl_description = "/".$name." ?\( ?[\w\s\d\>\<]+ ?\)/u";
+					if(preg_match($reg_tpl_description, $tpl[0], $desc)){
 						$desc = preg_replace("/[A-Z_\d_]+ ?/", '', $desc[0]);
+						$desc = trim($desc);
+					}
 
 					//--- В основном шаблоне устанавливаем якоря вместо выделенного блока.
 					$html = str_replace($tpl[0], '{_'.$name.'_}', $html);
 
 					//--- Отделяем шаблон от комментариев.
 					 # Ищем начальный комментарий
-					$reg_coment_1 = "/\t*?\<\!-- *?\>\> *?[A-Z_\d]+ *?\( ?([\pL \d\-_]+)? *?\) *?--\>(\r\n)?/u";
+					$reg_coment_1 = "/\t*?\<\!-- *?\>\> *?[A-Z_\d]+ *?\( ?[\pL \d\-_]*? *?\) *?--\>(\r\n)?/u";
 					if(preg_match($reg_coment_1, $tpl[0], $comment_1))
 						$tpl[0] = preg_replace($reg_coment_1, '', $tpl[0]);
 
@@ -172,10 +177,9 @@ class Tpl_html extends Tpl{
 						$tpl[0] = preg_replace($reg_coment_2, '', $tpl[0]);
 					
 					//--- Сохраняем всё в массиве
-					//$this -> templates[$name]['comment'] = $comment_1[0].'{template}'.$comment_2[0];
-					$this -> templates[$name]['tpl'] = $tpl[0];
-					$this -> templates[$name]['description'] = trim($desc, '() ');
-					$this -> html_parse_tpl[$name]=$tpl[0];
+					$this -> templates[$name]['comment'] = $this -> html_parse_tpl[$name]['comment'] = $comment_1[0].'{template}'.$comment_2[0];
+					$this -> templates[$name]['tpl'] = $this -> html_parse_tpl[$name]['tpl'] = $tpl[0];
+					$this -> templates[$name]['description'] = $this -> html_parse_tpl[$name]['description'] = $desc;
 				}
 			}
 		}
