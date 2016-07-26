@@ -1,6 +1,6 @@
 <?php
 //***** ВАЖНО *****
-//	Необходимо задокументировать класс, пока он не оброс до неузнаваемости.
+# перевести аргументы относящиеся к ключам и именам шаблонов в верхний регистр
 
 /*
 	****** Методы класса ******
@@ -9,7 +9,9 @@
 	- load_html($file_name = '') - Загружает подготовленный html-шаблон, разбивает его на фрагменты
 	- get_tpl_html() - Возвращает необработанный html шаблон
 	- get_parse_html($comment=false) - Возвращает обработанный html шаблон. Можно включать и отключать комментарии
+	- multi_parse_tpl($name = '', $data = '') - множественная обработка шаблона. Нужно передавать подготовленный массив данных
 
+	
 */
 
 class Tpl_html extends Tpl{
@@ -77,6 +79,7 @@ class Tpl_html extends Tpl{
 # Множественная обработка шаблона
 	function multi_parse_tpl($name = '', $data = ''){
 		if (!empty($name) and is_string($name) and is_array($data) and count($data)>0) {
+			$name = strtoupper($name);
 			$tpl = $this -> get_tpl($name);
 			$parse_tpl = '';
 			foreach ($data as $input) {

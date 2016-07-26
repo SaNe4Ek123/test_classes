@@ -20,6 +20,6 @@ foreach($menu as $item => $link){
 		'ITEM' => $item,
 		'LINK' => $link);
 }
-$tpl -> multi_parse_tpl('HEADER_MENU', $data);
+$tpl -> multi_parse_tpl('header_menu', $data);
 echo $tpl -> get_parse_html();
 ?>
