@@ -3,9 +3,23 @@ header('Content-Type: text/html; charset= utf-8');
 require_once ('classes/Tpl.class.php');
 require_once ('classes/Tpl_html.class.php');
 
-$tpl = new Tpl_html('html/');
-$a = $tpl -> load_html('test_html');
+$menu = array(
+	'Главная' => '#',
+	'Цены' => '#',
+	'Партнёры' => '#',
+	'Контакты' => '#',
+	'Популярные бренды' => '#',
+	'Избранное' => '#');
+$data = array();
 
-echo $tpl -> get_parse_html();
-print_r($tpl -> get_tpl_names());
+$tpl = new Tpl_html('html/');
+$a = $tpl -> load_html('test_2');
+
+foreach($menu as $item => $link){
+	$data[] = array(
+		'ITEM' => $item,
+		'LINK' => $link);
+}
+$tpl -> multi_parse_tpl('HEADER_MENU', $data);
+echo $tpl -> get_parse_html(true);
 ?>

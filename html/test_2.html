@@ -1,0 +1,42 @@
+<!-- >> MAIN () -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<!-- >> CSS_FILE () -->
+	<link rel="stylesheet" href="{CSS_FILE}"/>
+	<!-- CSS_FILE << -->
+	<!-- >> TITLE () -->
+	<title>{TITLE}</title>
+	<!-- TITLE << -->
+</head>
+<body>
+	<div id="main">
+		<div id="header">
+			<ul id="menu">
+				<!-- >> HEADER_MENU () -->
+				<li><a href="{LINK}">{ITEM}</a></li>
+				<!-- HEADER_MENU << -->
+			</ul>
+		</div>
+		<div id="content">
+			<div id="left-bar">
+				<ul id="vertical-menu">
+				<!-- >> LEFT_MENU () -->
+					<li><a href="{LINK}">{ITEM}</a></li>
+				<!-- LEFT_MENU << -->
+				</ul>
+			</div>
+			<div id="right-bar">
+			<!-- >> RIGHT_BAR () -->
+				<h2>{TITLE}</h2>
+				{TEXT}
+				<a href="{LINK}">Подробнее >></a>
+			<!-- RIGHT_BAR << -->
+			</div>
+		</div>
+	</div>
+	<div id="footer"></div>
+</body>
+</html>
+<!-- MAIN << -->
